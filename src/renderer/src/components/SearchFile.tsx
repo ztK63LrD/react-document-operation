@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import styled from 'styled-components'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTimes, faSearch } from '@fortawesome/free-solid-svg-icons'
 
 const SearchFile = ({ title, onSearch }) => {
     const [ searchActive, setSearchActive ] = useState(false)
@@ -42,7 +44,9 @@ const SearchFile = ({ title, onSearch }) => {
             { !searchActive && (
                 <SearchDiv>
                     <Span>{ title }</Span>
-                    <Span onClick={()=> { setSearchActive(true) }}>搜索</Span>
+                    <Span onClick={()=> { setSearchActive(true) }}>
+                        <FontAwesomeIcon icon={faSearch} />
+                    </Span>
                 </SearchDiv>
 
             )}
@@ -52,7 +56,9 @@ const SearchFile = ({ title, onSearch }) => {
                     <Input value={value} ref={inputRef} onChange={(e)=> {
                         setValue(e.target.value)
                     }} />
-                    <Span onClick={closeSearch}>关闭</Span>
+                    <Span onClick={closeSearch}>
+                        <FontAwesomeIcon icon={faTimes} />
+                    </Span>
                 </SearchDiv>
             )}
         </>
@@ -78,7 +84,7 @@ const Input = styled.input.attrs({
     type: 'text',
     placeholder: '搜索文件'
 })`
-    width: 70%;
+    width: 100%;
     height: 25px;
     border: none;
     outline: none;
