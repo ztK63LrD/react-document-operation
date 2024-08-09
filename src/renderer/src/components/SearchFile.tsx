@@ -2,36 +2,29 @@ import { useState, useEffect, useRef } from 'react'
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes, faSearch } from '@fortawesome/free-solid-svg-icons'
+import { useKeyHandler } from '@renderer/hooks/useKeyHandler'
 
-const SearchFile = ({ title, onSearch }) => {
-    const [ searchActive, setSearchActive ] = useState(false)
-    const [ value, setValue ] = useState('')
-    // 获取输入框实例
-    const inputRef = useRef<HTMLInputElement>(null)
+const SearchFile = ({ title, onSearch }: { title: string; onSearch: (value: string) => void }) => {
+    const [ searchActive, setSearchActive ] = useState<boolean>(false) // 是否显示搜索框
+    const [ value, setValue ] = useState<string>('') // 搜索框的值
+    const inputRef = useRef<HTMLInputElement>(null) // 获取输入框实例
+    const enterPressed = useKeyHandler(13) // 回车键
+    const escPressed = useKeyHandler(27) // 取消键
 
     // 关闭搜索框
     const closeSearch = () => {
         setSearchActive(false)
         setValue('')
     }
-   
+
     // 监听键盘事件
-    useEffect(() => {
-        const ListenKeyWord = (e) => {
-            const { keyCode } = e
-            if ( keyCode === 13 && searchActive ) {
-                onSearch(value)
-            }
-            if ( keyCode === 27 && searchActive ) {
-                closeSearch()
-            }
-        }
-        document.addEventListener('keyup', ListenKeyWord)
-        // 组件加载时获取焦点
-        return () => { // 组件卸载时移除监听事件
-            document.removeEventListener('keyup', ListenKeyWord)
-        }
-    }, [searchActive, value, onSearch])
+    if (enterPressed && searchActive) {
+        onSearch(value)
+    }
+    if (escPressed && searchActive) {
+        closeSearch()
+    }
+   
     // 实现输入框聚焦
     useEffect(() => {
         if (searchActive && inputRef.current) {
