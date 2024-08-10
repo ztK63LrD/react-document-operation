@@ -30,7 +30,8 @@
     "easymde": "^2.18.0",
     "electron-updater": "^6.1.7",
     "react-simplemde-editor": "^5.2.0",
-    "styled-components": "^6.1.12"
+    "styled-components": "^6.1.12",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^2.0.0",

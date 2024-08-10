@@ -6,7 +6,7 @@ import { useKeyHandler } from '@renderer/hooks/useKeyHandler'
 
 // props数据类型
 interface propsTypes {
-    files: Array<{ id: string, title: string, body: string, createTime: string }>;
+    files: Array<{ id: string, title: string, body: string, createTime: string, isNew?: boolean }>;
     editFile: (id: string) => void;
     saveFile: (id: string, value: string) => void;
     deteleFile: (id: string) => void;
@@ -19,9 +19,19 @@ const FileList = ({ files, editFile, saveFile, deteleFile }: propsTypes) => {
     const enterPressed = useKeyHandler(13) // 回车键
     const escPressed = useKeyHandler(27) // 取消键
     
+    // 关闭行为
+    const closeFn = () => {
+        setEditItem('')
+        setValue('')
+        const currentFile = files.find(item => item.id === editItem)
+        if (currentFile && currentFile?.isNew) {
+            deteleFile(currentFile.id)
+        }
+    }
+    
     // 监听键盘事件
     useEffect(() => {
-        if (enterPressed && !!editItem) {
+        if (enterPressed && !!editItem && value.trim() !== '') {
             saveFile(editItem, value)
             setEditItem('')
         }
@@ -29,15 +39,30 @@ const FileList = ({ files, editFile, saveFile, deteleFile }: propsTypes) => {
             setEditItem('')
         }
     })
+    // 监听文件列表变化
+    useEffect(() => {
+        const newFile = files.find(item => item.isNew)
+        if (newFile) {
+            setEditItem(newFile.id)
+            setValue(newFile.title)
+        }
+    }, [files])
+    // 监听是否处于编辑状态, 编辑状态时修改已经存在的文件, 删除编辑文件
+    useEffect(() => {
+        const newFile = files.find(item => item.isNew)
+        if (newFile && editItem !== newFile.id) {
+            deteleFile(newFile.id)
+        }
+    }, [editItem])
     return (
         <GroupMenu>
             { files.map(item => {
                 return (
                     <MenuItem key={item.id}>
-                        { item.id !== editItem ? (
+                        { (item.id !== editItem && !item.isNew) ? (
                             <>
                                 <FontAwesomeIcon className='icon1' icon={faFileAlt} />
-                                <span onClick={() => { editFile(item.id) }}>{ item.title }</span>
+                                <span onClick={() => { editFile(item.id); closeFn() }}>{ item.title }</span>
                                 <FontAwesomeIcon className='icon2' icon={faTrashAlt} onClick={() => deteleFile(item.id) } />
                                 <FontAwesomeIcon className='icon3' icon={faEdit} onClick={() => {
                                     setValue('') // 清空输入框
@@ -48,7 +73,7 @@ const FileList = ({ files, editFile, saveFile, deteleFile }: propsTypes) => {
                             <>
                                 <FontAwesomeIcon className='icon1' icon={faFileAlt} />
                                 <MenuInput value={value} ref={inputRef} onChange={(e: any) => setValue(e.target.value)} />
-                                <FontAwesomeIcon className='icon3' icon={faTimes} onClick={() => setEditItem('') } />
+                                <FontAwesomeIcon className='icon3' icon={faTimes} onClick={closeFn} />
                             </>
                         ) }
         

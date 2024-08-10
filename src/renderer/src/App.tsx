@@ -1,6 +1,7 @@
 import { useState } from "react";
 import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
+import { v4 as uuidv4 } from "uuid";
 import styled, { createGlobalStyle } from "styled-components";
 import { faFileImport, faPlus } from '@fortawesome/free-solid-svg-icons'
 // 导入公共组件
@@ -8,13 +9,17 @@ import SearchFile from "./components/SearchFile";
 import FileList from "./components/FileList";
 import ButtonItem from "./components/ButtonItem";
 import TabList from "./components/TabList";
-import img from "./assets/bg.gif";
+// 导入工具函数
+import { mapArr, objToArr } from "./utils/helper";
+// @ts-ignore
+import ImageGif from "./assets/bg.gif";
 
 interface filesTypes {
     id: string;
     title: string;
     body: string;
     createTime: string;
+    isNew?: boolean;
 }
 
 // 模拟文件数据
@@ -38,6 +43,11 @@ const App = () => {
     // 计算左侧列表需要展示什么样信息
     const fileList = (searchFiles && searchFiles.length > 0) ? searchFiles : files;
     
+    // 依据关键字搜索文件
+    const searchFile = (keyword: string) => {
+        const newFiles = files.filter(item => item.title.includes(keyword));
+        setSearchFiles(newFiles);
+    }
     // 点击左侧文件显示编辑页面
     const openItem = (id: string) => {
         setActiveId(id); // 激活tab
@@ -52,8 +62,10 @@ const App = () => {
     const closeFile = (id: string) => {
         const retOpens = openIds.filter((item) => item !== id); // 过滤掉该tab
         setOpenIds(retOpens); // 过滤掉该tab
-        if (retOpens.length > 0) {
+        if (retOpens.length > 0 && (activeId === id)) {
             setActiveId(retOpens[0]); // 激活第一个tab
+        } else if (retOpens.length > 0 && (activeId !== id)) {
+            setActiveId(activeId); // 没有tab了，则清空激活状态
         } else {
             setActiveId(""); // 如果没有tab了，则清空激活状态
         }
@@ -80,16 +92,12 @@ const App = () => {
         // 删除后，关闭可能正在打开的tab
         closeFile(id);
     }
-    // 依据关键字搜索文件
-    const searchFile = (keyword: string) => {
-        const newFiles = files.filter(item => item.title.includes(keyword));
-        setSearchFiles(newFiles);
-    }
+
     // 重命名文件名称
     const renameFile = (id: string, newTitle: string) => {
         const newFiles = files.map((file) => {
             if (id === file.id) {
-                return {...file, title: newTitle}; // 更新文件内容
+                return {...file, title: newTitle, isNew: false}; // 更新文件内容
             } else {
                 return file;
             }
@@ -98,9 +106,18 @@ const App = () => {
     }
     // 新建文件
     const createNewFile = () => {
-        const newFile = {id: uuidv4(), title: "新建文件", body: "", createTime: Date.now().toString()};
-        setFiles([...files, newFile]); // 更新文件列表
-        openItem(newFile.id); // 打开新创建的文件
+        const newId = uuidv4();
+        const newFile: any = {
+            id: newId,
+            title: "",
+            body: "## 初始化内容",
+            createTime: new Date().getTime(),
+            isNew: true
+        }
+        // 避免连续点击新建
+        if (!files.find((file) => file?.isNew)) {
+            setFiles([...files, newFile]);
+        }
     }
     return (
         <>
@@ -144,7 +161,7 @@ const App = () => {
                         </>
                     ) : (
                         <AdvertisementDiv>
-                            <AdvertisementImgs src={img} title="csdn博主 '亦世凡华、'" onClick={()=> {
+                            <AdvertisementImgs src={ImageGif} title="csdn博主 '亦世凡华、'" onClick={()=> {
                                 window.open("https://blog.csdn.net/qq_53123067?spm=1000.2115.3001.5343")
                             }} />
                             <AdvertisementTitle>当前暂无数据<br/>(PS: 点击上方图片，求一波关注)</AdvertisementTitle>
