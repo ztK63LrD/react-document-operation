@@ -6,8 +6,9 @@
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:"
+      content="default-src *; script-src *; style-src 'self' 'unsafe-inline' *; img-src *; media-src *; "
     />
+
   </head>
 
   <body>
@@ -15,3 +16,4 @@
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
+  

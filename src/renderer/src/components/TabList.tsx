@@ -1,4 +1,3 @@
-import { useState, useRef } from 'react'
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes, faCircle } from '@fortawesome/free-solid-svg-icons'
@@ -27,7 +26,7 @@ const TabList = ({ files, activeItem, unSaveItems, clickItem, closeItem }: TabLi
                             <FontAwesomeIcon className='close' icon={faTimes} />
                         </TabItemIcon>
                         { isUnSave && (
-                            <FontAwesomeIcon className='circle' icon={faCircle} />
+                            <FontAwesomeIcon className='circle' icon={faCircle} onClick={(e: any) => { e.stopPropagation(); closeItem(item.id) }} />
                         ) }
                     </TabItem>
                 )
@@ -40,7 +39,6 @@ export default TabList
 // 样式组件
 const TabDiv = styled.div`
     width: 100%;
-    height: 51px;
     display: flex;
     border-bottom: 1px dashed #ccc;
 `

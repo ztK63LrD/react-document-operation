@@ -15,16 +15,20 @@ const SearchFile = ({ title, onSearch }: { title: string; onSearch: (value: stri
     const closeSearch = () => {
         setSearchActive(false)
         setValue('')
+        // 当关闭搜索功能时，提供空字符满足没有数据显示情况
+        onSearch('')
     }
-
     // 监听键盘事件
-    if (enterPressed && searchActive) {
-        onSearch(value)
-    }
-    if (escPressed && searchActive) {
-        closeSearch()
-    }
-   
+    useEffect(()=> {
+        // 监听键盘事件
+        if (enterPressed && searchActive) {
+            onSearch(value)
+        }
+        if (escPressed && searchActive) {
+            closeSearch()
+        }
+    })
+
     // 实现输入框聚焦
     useEffect(() => {
         if (searchActive && inputRef.current) {

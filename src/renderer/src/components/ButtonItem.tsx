@@ -10,7 +10,7 @@ interface ButtonItemProps {
 
 const ButtonItem = ({ title, btnClick, icon }: ButtonItemProps) => {
     return (
-        <BtnDiv>
+        <BtnDiv onClick={btnClick}>
             <FontAwesomeIcon style={{ marginRight: '10px' }} icon={icon} />
             { title }
         </BtnDiv>

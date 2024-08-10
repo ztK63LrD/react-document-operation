@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFileAlt, faEdit, faTrashAlt, faTimes } from '@fortawesome/free-solid-svg-icons'
@@ -20,13 +20,15 @@ const FileList = ({ files, editFile, saveFile, deteleFile }: propsTypes) => {
     const escPressed = useKeyHandler(27) // 取消键
     
     // 监听键盘事件
-    if (enterPressed && !!editItem) {
-        saveFile(editItem, value)
-        setEditItem('')
-    }
-    if (escPressed && !!editItem) {
-        setEditItem('')
-    }
+    useEffect(() => {
+        if (enterPressed && !!editItem) {
+            saveFile(editItem, value)
+            setEditItem('')
+        }
+        if (escPressed && !!editItem) {
+            setEditItem('')
+        }
+    })
     return (
         <GroupMenu>
             { files.map(item => {
